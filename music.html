@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Simple Music App (HTML only)</title>
+  <style>
+    :root { color-scheme: dark; }
+    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans JP", sans-serif; background:#0a0a0a; color:#f5f5f5; }
+    .app { max-width: 980px; margin: 0 auto; padding: 18px 18px 110px; }
+    .row { display:flex; gap: 12px; align-items:center; flex-wrap: wrap; }
+    .card { background:#111; border:1px solid #222; border-radius:16px; padding:14px; }
+    .muted { color:#a3a3a3; }
+    button, input[type="text"] {
+      background:#171717; color:#fff; border:1px solid #262626; border-radius:12px; padding:10px 12px;
+    }
+    button { cursor:pointer; }
+    button:hover { border-color:#3a3a3a; }
+    button:disabled { opacity:.5; cursor:not-allowed; }
+    .grid { display:grid; grid-template-columns: 1fr; gap: 10px; }
+    @media (min-width: 780px) { .grid { grid-template-columns: 1fr 1fr; } }
+    .track { display:flex; gap:12px; align-items:center; justify-content:space-between; padding:10px; border-radius:14px; border:1px solid #222; background:#0f0f0f; }
+    .track:hover { border-color:#333; }
+    .track .left { display:flex; gap: 10px; align-items:center; min-width: 0; }
+    .pill { font-size: 12px; padding:4px 8px; border-radius:999px; border:1px solid #2a2a2a; background:#141414; color:#cfcfcf; }
+    .title { font-weight: 650; white-space: nowrap; overflow:hidden; text-overflow: ellipsis; max-width: 320px; }
+    .artist { font-size: 12px; color:#b3b3b3; white-space: nowrap; overflow:hidden; text-overflow: ellipsis; max-width: 320px; }
+    .right { display:flex; gap: 8px; align-items:center; }
+    .mini {
+      position: fixed; left: 0; right: 0; bottom: 0;
+      background: rgba(17,17,17,.92);
+      border-top: 1px solid #262626;
+      backdrop-filter: blur(10px);
+      padding: 12px;
+    }
+    .mini .inner { max-width: 980px; margin:0 auto; display:flex; gap: 12px; align-items:center; }
+    .mini .meta { min-width: 0; flex: 1; }
+    .mini .meta .t { font-weight: 650; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .mini .meta .a { font-size:12px; color:#b3b3b3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    input[type="range"] { width: 100%; }
+    .w-220 { width: 220px; }
+    .w-160 { width: 160px; }
+    .spacer { height: 10px; }
+    .kbd { font-size: 12px; color:#bdbdbd; }
+    .danger { border-color:#3b1d1d; background:#140909; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="card">
+      <div class="row" style="justify-content:space-between;">
+        <div>
+          <div style="font-size:18px;font-weight:800;">Simple Music App</div>
+          <div class="muted" style="margin-top:4px;">HTML単体の簡易基盤（ローカル音源を選んで再生）</div>
+        </div>
+        <div class="row">
+          <span class="kbd">Tips: 曲をクリックで再生</span>
+        </div>
+      </div>
+
+      <div class="spacer"></div>
+
+      <div class="row">
+        <label class="pill" for="fileInput" style="cursor:pointer;">音源を追加（mp3/wav）</label>
+        <input id="fileInput" type="file" accept="audio/*" multiple style="display:none;" />
+        <input id="artistInput" class="w-160" type="text" placeholder="アーティスト（任意）" />
+        <input id="searchInput" class="w-220" type="text" placeholder="検索（曲名/ファイル名）" />
+        <button id="clearBtn" class="danger" title="このページ上の曲一覧をリセット">一覧クリア</button>
+      </div>
+
+      <div class="spacer"></div>
+
+      <div class="row">
+        <button id="shuffleBtn" title="シャッフル（簡易）">Shuffle: OFF</button>
+        <button id="loopBtn" title="ループ">Loop: OFF</button>
+        <span class="muted" id="countLabel">0 tracks</span>
+      </div>
+    </div>
+
+    <div class="spacer"></div>
+
+    <div class="grid" id="trackList"></div>
+  </div>
+
+  <!-- Mini Player -->
+  <div class="mini">
+    <div class="inner">
+      <button id="prevBtn" title="前へ">⏮</button>
+      <button id="playBtn" title="再生/停止">▶</button>
+      <button id="nextBtn" title="次へ">⏭</button>
+
+      <div class="meta">
+        <div class="t" id="nowTitle">未再生</div>
+        <div class="a" id="nowArtist">音源を追加してください</div>
+        <input id="seek" type="range" min="0" max="1000" value="0" />
+        <div class="row" style="justify-content:space-between;">
+          <span class="muted" id="timeLabel">0:00 / 0:00</span>
+          <span class="muted" id="statusLabel"></span>
+        </div>
+      </div>
+
+      <div class="row" style="gap:10px;">
+        <span class="muted">Vol</span>
+        <input id="vol" type="range" min="0" max="1" step="0.01" value="1" class="w-160" />
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== State =====
+    const state = {
+      tracks: [],   // { id, title, artist, url, fileName, durationSec }
+      queue: [],    // index list (track indices)
+      index: -1,    // current index in queue
+      shuffle: false,
+      loop: false,
+      seeking: false
+    };
+
+    const audio = new Audio();
+    audio.preload = "auto";
+
+    // ===== DOM =====
+    const fileInput = document.getElementById("fileInput");
+    const artistInput = document.getElementById("artistInput");
+    const searchInput = document.getElementById("searchInput");
+    const clearBtn = document.getElementById("clearBtn");
+
+    const shuffleBtn = document.getElementById("shuffleBtn");
+    const loopBtn = document.getElementById("loopBtn");
+    const countLabel = document.getElementById("countLabel");
+
+    const trackList = document.getElementById("trackList");
+
+    const prevBtn = document.getElementById("prevBtn");
+    const playBtn = document.getElementById("playBtn");
+    const nextBtn = document.getElementById("nextBtn");
+
+    const nowTitle = document.getElementById("nowTitle");
+    const nowArtist = document.getElementById("nowArtist");
+    const seek = document.getElementById("seek");
+    const timeLabel = document.getElementById("timeLabel");
+    const statusLabel = document.getElementById("statusLabel");
+    const vol = document.getElementById("vol");
+
+    // ===== Helpers =====
+    const uuid = () => (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random();
+
+    function fmt(sec) {
+      if (!isFinite(sec) || sec < 0) sec = 0;
+      sec = Math.floor(sec);
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return m + ":" + String(s).padStart(2, "0");
+    }
+
+    function setStatus(text) { statusLabel.textContent = text || ""; }
+
+    function currentTrack() {
+      if (state.index < 0 || state.index >= state.queue.length) return null;
+      const ti = state.queue[state.index];
+      return state.tracks[ti] || null;
+    }
+
+    function buildQueueFromFiltered() {
+      // 検索に一致する曲のインデックス列をキューにする（Spotify的な「一覧から再生」の簡易）
+      const q = [];
+      const query = searchInput.value.trim().toLowerCase();
+      state.tracks.forEach((t, i) => {
+        const hay = (t.title + " " + t.fileName).toLowerCase();
+        if (!query || hay.includes(query)) q.push(i);
+      });
+      state.queue = q;
+      if (state.shuffle) shuffleQueue();
+    }
+
+    function shuffleQueue() {
+      // Fisher-Yates
+      for (let i = state.queue.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [state.queue[i], state.queue[j]] = [state.queue[j], state.queue[i]];
+      }
+    }
+
+    function updateCount() {
+      countLabel.textContent = `${state.tracks.length} tracks`;
+    }
+
+    function updateButtons() {
+      const has = state.queue.length > 0 && state.index >= 0;
+      prevBtn.disabled = !has;
+      nextBtn.disabled = !has;
+      playBtn.disabled = !has;
+      playBtn.textContent = audio.paused ? "▶" : "⏸";
+      shuffleBtn.textContent = `Shuffle: ${state.shuffle ? "ON" : "OFF"}`;
+      loopBtn.textContent = `Loop: ${state.loop ? "ON" : "OFF"}`;
+    }
+
+    function updateNowPlayingMeta() {
+      const t = currentTrack();
+      if (!t) {
+        nowTitle.textContent = "未再生";
+        nowArtist.textContent = "音源を追加してください";
+        timeLabel.textContent = "0:00 / 0:00";
+        seek.value = "0";
+        setStatus("");
+        return;
+      }
+      nowTitle.textContent = t.title || "Untitled";
+      nowArtist.textContent = t.artist || "Unknown Artist";
+    }
+
+    function renderList() {
+      trackList.innerHTML = "";
+      const query = searchInput.value.trim().toLowerCase();
+
+      const filtered = state.tracks
+        .map((t, i) => ({ t, i }))
+        .filter(({ t }) => {
+          const hay = (t.title + " " + t.fileName).toLowerCase();
+          return !query || hay.includes(query);
+        });
+
+      if (filtered.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "card muted";
+        empty.textContent = state.tracks.length === 0
+          ? "まだ曲がありません。「音源を追加」からmp3/wavを選択してください。"
+          : "検索結果がありません。";
+        trackList.appendChild(empty);
+      }
+
+      filtered.forEach(({ t, i }) => {
+        const el = document.createElement("div");
+        el.className = "track";
+        el.innerHTML = `
+          <div class="left">
+            <span class="pill">${String(i + 1).padStart(2,"0")}</span>
+            <div style="min-width:0;">
+              <div class="title" title="${escapeHtml(t.title)}">${escapeHtml(t.title)}</div>
+              <div class="artist" title="${escapeHtml(t.artist)}">${escapeHtml(t.artist || "Unknown Artist")} • <span class="muted">${escapeHtml(t.fileName)}</span></div>
+            </div>
+          </div>
+          <div class="right">
+            <span class="muted">${t.durationSec ? fmt(t.durationSec) : "--:--"}</span>
+            <button data-action="play" data-index="${i}">再生</button>
+            <button data-action="remove" data-index="${i}" class="danger">削除</button>
+          </div>
+        `;
+
+        el.addEventListener("click", (e) => {
+          const btn = e.target.closest("button");
+          if (!btn) {
+            // 行クリックで再生
+            playFromTrackIndex(i);
+            return;
+          }
+          const action = btn.getAttribute("data-action");
+          const idx = Number(btn.getAttribute("data-index"));
+          if (action === "play") playFromTrackIndex(idx);
+          if (action === "remove") removeTrack(idx);
+        });
+
+        trackList.appendChild(el);
+      });
+
+      buildQueueFromFiltered();
+      updateButtons();
+    }
+
+    function escapeHtml(s) {
+      return String(s ?? "").replace(/[&<>"']/g, (c) => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+      }[c]));
+    }
+
+    async function readDuration(url) {
+      // 一時audioでduration読み取り
+      return new Promise((resolve) => {
+        const a = new Audio();
+        a.preload = "metadata";
+        a.src = url;
+        a.addEventListener("loadedmetadata", () => {
+          resolve(isFinite(a.duration) ? a.duration : 0);
+        });
+        a.addEventListener("error", () => resolve(0));
+      });
+    }
+
+    function ensureIndexForTrackIndex(trackIndex) {
+      // 現在のqueue（filtered）上での位置に合わせる
+      const pos = state.queue.indexOf(trackIndex);
+      if (pos >= 0) return pos;
+
+      // キューにいなければ全曲で組み直して追加入れ
+      state.queue = state.tracks.map((_, i) => i);
+      if (state.shuffle) shuffleQueue();
+      return state.queue.indexOf(trackIndex);
+    }
+
+    async function playFromTrackIndex(trackIndex) {
+      if (state.tracks.length === 0) return;
+
+      // フィルタに連動したqueueを使い、対象を探す
+      buildQueueFromFiltered();
+      const pos = ensureIndexForTrackIndex(trackIndex);
+      state.index = Math.max(0, pos);
+
+      const t = currentTrack();
+      if (!t) return;
+
+      audio.src = t.url;
+      updateNowPlayingMeta();
+      setStatus("Loading...");
+      try {
+        await audio.play();
+        setStatus("");
+      } catch (err) {
+        setStatus("再生できません（ユーザー操作が必要/ブラウザ制約）");
+      }
+      updateButtons();
+    }
+
+    function removeTrack(trackIndex) {
+      const t = state.tracks[trackIndex];
+      if (!t) return;
+
+      // 再生中なら停止
+      const ct = currentTrack();
+      if (ct && ct.id === t.id) {
+        audio.pause();
+        audio.src = "";
+        state.index = -1;
+      }
+
+      // objectURL解放
+      try { URL.revokeObjectURL(t.url); } catch {}
+
+      state.tracks.splice(trackIndex, 1);
+
+      // queue再構築
+      buildQueueFromFiltered();
+      if (state.queue.length === 0) state.index = -1;
+      else state.index = Math.min(state.index, state.queue.length - 1);
+
+      updateCount();
+      renderList();
+      updateNowPlayingMeta();
+      updateButtons();
+    }
+
+    async function playNext() {
+      if (state.queue.length === 0) return;
+      if (state.index < state.queue.length - 1) state.index++;
+      else {
+        if (state.loop) state.index = 0;
+        else { audio.pause(); updateButtons(); return; }
+      }
+      const t = currentTrack();
+      if (!t) return;
+      audio.src = t.url;
+      updateNowPlayingMeta();
+      try { await audio.play(); } catch { setStatus("再生できません"); }
+      updateButtons();
+    }
+
+    async function playPrev() {
+      if (state.queue.length === 0) return;
+      if (audio.currentTime > 2) {
+        audio.currentTime = 0;
+        return;
+      }
+      if (state.index > 0) state.index--;
+      else {
+        if (state.loop) state.index = state.queue.length - 1;
+        else { audio.currentTime = 0; return; }
+      }
+      const t = currentTrack();
+      if (!t) return;
+      audio.src = t.url;
+      updateNowPlayingMeta();
+      try { await audio.play(); } catch { setStatus("再生できません"); }
+      updateButtons();
+    }
+
+    // ===== Events =====
+    fileInput.addEventListener("change", async () => {
+      const files = Array.from(fileInput.files || []);
+      if (files.length === 0) return;
+
+      const defaultArtist = artistInput.value.trim();
+
+      for (const f of files) {
+        const url = URL.createObjectURL(f);
+        const title = f.name.replace(/\.[^/.]+$/, "");
+        const track = {
+          id: uuid(),
+          title,
+          artist: defaultArtist,
+          url,
+          fileName: f.name,
+          durationSec: 0
+        };
+        state.tracks.unshift(track);
+
+        // duration取得（任意、遅くてもUIは動く）
+        track.durationSec = await readDuration(url);
+      }
+
+      fileInput.value = "";
+      updateCount();
+      renderList();
+
+      // 初回追加時、最初の曲を選択状態に（再生はしない）
+      if (state.index < 0 && state.queue.length > 0) {
+        state.index = 0;
+        updateNowPlayingMeta();
+        updateButtons();
+      }
+    });
+
+    searchInput.addEventListener("input", () => {
+      renderList();
+      // 再生中の曲がフィルタから外れるケースがあるためメタだけ維持
+      updateButtons();
+    });
+
+    clearBtn.addEventListener("click", () => {
+      audio.pause();
+      audio.src = "";
+      state.tracks.forEach(t => { try { URL.revokeObjectURL(t.url); } catch {} });
+      state.tracks = [];
+      state.queue = [];
+      state.index = -1;
+      updateCount();
+      renderList();
+      updateNowPlayingMeta();
+      updateButtons();
+    });
+
+    shuffleBtn.addEventListener("click", () => {
+      state.shuffle = !state.shuffle;
+      buildQueueFromFiltered();
+      // 再生中の曲をキュー内位置へ再同期
+      const ct = currentTrack();
+      if (ct) {
+        const trackIndex = state.tracks.findIndex(x => x.id === ct.id);
+        state.index = Math.max(0, state.queue.indexOf(trackIndex));
+      }
+      renderList();
+      updateButtons();
+    });
+
+    loopBtn.addEventListener("click", () => {
+      state.loop = !state.loop;
+      audio.loop = false; // 1曲ループではなくキューループなのでfalse
+      updateButtons();
+    });
+
+    playBtn.addEventListener("click", async () => {
+      const t = currentTrack();
+      if (!t) return;
+      if (!audio.src) audio.src = t.url;
+      if (audio.paused) {
+        try { await audio.play(); setStatus(""); } catch { setStatus("再生できません"); }
+      } else {
+        audio.pause();
+      }
+      updateButtons();
+    });
+
+    nextBtn.addEventListener("click", playNext);
+    prevBtn.addEventListener("click", playPrev);
+
+    vol.addEventListener("input", () => {
+      audio.volume = Number(vol.value);
+    });
+
+    seek.addEventListener("input", () => {
+      state.seeking = true;
+      const t = currentTrack();
+      if (!t) return;
+      const dur = isFinite(audio.duration) ? audio.duration : 0;
+      if (dur <= 0) return;
+      const ratio = Number(seek.value) / 1000;
+      const target = ratio * dur;
+      timeLabel.textContent = `${fmt(target)} / ${fmt(dur)}`;
+    });
+
+    seek.addEventListener("change", () => {
+      const dur = isFinite(audio.duration) ? audio.duration : 0;
+      if (dur > 0) {
+        const ratio = Number(seek.value) / 1000;
+        audio.currentTime = ratio * dur;
+      }
+      state.seeking = false;
+    });
+
+    audio.addEventListener("timeupdate", () => {
+      if (state.seeking) return;
+      const dur = isFinite(audio.duration) ? audio.duration : 0;
+      const cur = isFinite(audio.currentTime) ? audio.currentTime : 0;
+      if (dur > 0) {
+        seek.value = String(Math.floor((cur / dur) * 1000));
+      } else {
+        seek.value = "0";
+      }
+      timeLabel.textContent = `${fmt(cur)} / ${fmt(dur)}`;
+      updateButtons();
+    });
+
+    audio.addEventListener("loadedmetadata", () => {
+      const dur = isFinite(audio.duration) ? audio.duration : 0;
+      timeLabel.textContent = `${fmt(0)} / ${fmt(dur)}`;
+    });
+
+    audio.addEventListener("play", () => { updateButtons(); setStatus(""); });
+    audio.addEventListener("pause", () => { updateButtons(); });
+
+    audio.addEventListener("ended", async () => {
+      // キュー末尾ならloopで先頭へ、それ以外は次へ
+      if (state.queue.length === 0) return;
+      if (state.index >= state.queue.length - 1) {
+        if (state.loop) {
+          state.index = 0;
+          await playNext(); // playNextはindexを進めるので一旦戻す
+        } else {
+          updateButtons();
+        }
+        return;
+      }
+      await playNext();
+    });
+
+    // ===== Init =====
+    updateCount();
+    renderList();
+    updateNowPlayingMeta();
+    updateButtons();
+  </script>
+</body>
+</html>
