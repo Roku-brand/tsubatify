@@ -1,0 +1,17 @@
+{
+  "name": "Tsubatify",
+  "short_name": "Tsubatify",
+  "description": "Spotify風音楽プレイヤー PWA",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
