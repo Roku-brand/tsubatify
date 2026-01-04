@@ -1,5 +1,5 @@
 // App Component with Router
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { BottomTab } from './components/BottomTab';
 import { MiniPlayer } from './components/MiniPlayer';
 import { Toast } from './components/Toast';
@@ -32,7 +32,7 @@ function NowPlayingLayout() {
 
 export function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         {/* Redirect root to home */}
         <Route path="/" element={<Navigate to="/home" replace />} />
@@ -92,6 +92,6 @@ export function App() {
           }
         />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
