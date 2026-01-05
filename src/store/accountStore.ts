@@ -79,6 +79,11 @@ export const useAccountStore = create<AccountState>((set) => ({
   },
 
   updateAccount: (accountId: string, updates: Partial<Account>) => {
+    // Only update if account exists
+    const accounts = getAccounts();
+    if (!accounts.some((a) => a.accountId === accountId)) {
+      return;
+    }
     updateAccountInStorage(accountId, updates);
     set({
       accounts: getAccounts(),

@@ -102,10 +102,10 @@ export function AccountModal({ onClose }: AccountModalProps) {
     if (account) {
       setEditName(account.name);
       setEditArtistName(account.defaultArtistName || '');
+      setEditingAccountId(accountId);
+      setShowCreate(false);
+      setConfirmDelete(null);
     }
-    setEditingAccountId(accountId);
-    setShowCreate(false);
-    setConfirmDelete(null);
   };
 
   const handleSaveSettings = () => {
