@@ -28,7 +28,7 @@ export function PlaylistDetailPage() {
         プレイリストが見つかりません
         <button
           onClick={() => navigate('/playlists')}
-          className="block mx-auto mt-4 text-green-400"
+          className="block mx-auto mt-4 text-sky-400"
         >
           戻る
         </button>
@@ -121,7 +121,7 @@ export function PlaylistDetailPage() {
         <button
           onClick={handlePlayAll}
           disabled={playlist.trackIds.length === 0}
-          className="px-6 py-2 bg-green-500 text-black font-medium rounded-full hover:bg-green-400 transition-colors disabled:opacity-50"
+          className="px-6 py-2 bg-sky-500 text-black font-medium rounded-full hover:bg-sky-400 transition-colors disabled:opacity-50"
         >
           ▶ 再生
         </button>
@@ -155,7 +155,7 @@ export function PlaylistDetailPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="曲を検索..."
-              className="w-full px-4 py-2 bg-neutral-800 text-white rounded-lg border border-neutral-700 focus:border-green-500 focus:outline-none"
+              className="w-full px-4 py-2 bg-neutral-800 text-white rounded-lg border border-neutral-700 focus:border-sky-500 focus:outline-none"
               autoFocus
             />
           </div>
@@ -190,7 +190,7 @@ export function PlaylistDetailPage() {
                   </div>
                   <button
                     onClick={() => handleAddTrack(track.trackId)}
-                    className="px-3 py-1 text-green-400 border border-green-400 rounded-full text-sm hover:bg-green-400 hover:text-black transition-colors"
+                    className="px-3 py-1 text-sky-400 border border-sky-400 rounded-full text-sm hover:bg-sky-400 hover:text-black transition-colors"
                   >
                     追加
                   </button>

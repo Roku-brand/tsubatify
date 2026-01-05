@@ -96,7 +96,7 @@ export function HomePage() {
           </p>
           <button
             onClick={() => navigate('/upload')}
-            className="px-6 py-2 bg-green-500 text-black font-medium rounded-full hover:bg-green-400 transition-colors"
+            className="px-6 py-2 bg-sky-500 text-black font-medium rounded-full hover:bg-sky-400 transition-colors"
           >
             音楽をアップロード
           </button>

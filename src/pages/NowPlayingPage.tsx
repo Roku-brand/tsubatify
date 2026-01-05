@@ -34,7 +34,7 @@ export function NowPlayingPage() {
         </p>
         <button
           onClick={() => navigate('/library')}
-          className="px-6 py-2 bg-green-500 text-black font-medium rounded-full hover:bg-green-400 transition-colors"
+          className="px-6 py-2 bg-sky-500 text-black font-medium rounded-full hover:bg-sky-400 transition-colors"
         >
           ライブラリへ
         </button>
@@ -125,7 +125,7 @@ export function NowPlayingPage() {
           <button
             onClick={toggleShuffle}
             className={`w-12 h-12 rounded-full flex items-center justify-center text-xl transition-colors ${
-              shuffle ? 'text-green-400' : 'text-neutral-400'
+              shuffle ? 'text-sky-400' : 'text-neutral-400'
             }`}
           >
             🔀
@@ -159,7 +159,7 @@ export function NowPlayingPage() {
           <button
             onClick={cycleRepeat}
             className={`w-12 h-12 rounded-full flex items-center justify-center text-xl transition-colors ${
-              repeat !== 'off' ? 'text-green-400' : 'text-neutral-400'
+              repeat !== 'off' ? 'text-sky-400' : 'text-neutral-400'
             }`}
           >
             {getRepeatIcon()}

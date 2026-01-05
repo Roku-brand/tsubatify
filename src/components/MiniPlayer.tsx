@@ -31,7 +31,7 @@ export function MiniPlayer() {
       {/* Progress bar */}
       <div className="h-1 bg-neutral-800">
         <div
-          className="h-full bg-green-500 transition-all duration-200"
+          className="h-full bg-sky-500 transition-all duration-200"
           style={{ width: `${progress}%` }}
         />
       </div>

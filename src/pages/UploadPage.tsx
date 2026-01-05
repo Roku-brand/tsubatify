@@ -144,10 +144,10 @@ export function UploadPage() {
             type="file"
             accept="audio/mp3,audio/wav,audio/mpeg,.mp3,.wav"
             onChange={handleAudioSelect}
-            className="w-full text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-green-500 file:text-black hover:file:bg-green-400"
+            className="w-full text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-sky-500 file:text-black hover:file:bg-sky-400"
           />
           {audioFile && (
-            <div className="mt-2 text-sm text-green-400">
+            <div className="mt-2 text-sm text-sky-400">
               ✓ {audioFile.name}
             </div>
           )}
@@ -189,7 +189,7 @@ export function UploadPage() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="曲のタイトル"
-            className="w-full px-4 py-3 bg-neutral-800 text-white rounded-lg border border-neutral-700 focus:border-green-500 focus:outline-none"
+            className="w-full px-4 py-3 bg-neutral-800 text-white rounded-lg border border-neutral-700 focus:border-sky-500 focus:outline-none"
           />
         </div>
 
@@ -203,7 +203,7 @@ export function UploadPage() {
             value={artist}
             onChange={(e) => setArtist(e.target.value)}
             placeholder="アーティスト名"
-            className="w-full px-4 py-3 bg-neutral-800 text-white rounded-lg border border-neutral-700 focus:border-green-500 focus:outline-none"
+            className="w-full px-4 py-3 bg-neutral-800 text-white rounded-lg border border-neutral-700 focus:border-sky-500 focus:outline-none"
           />
         </div>
 
@@ -217,7 +217,7 @@ export function UploadPage() {
             value={tags}
             onChange={(e) => setTags(e.target.value)}
             placeholder="ジャンル, ムード, テンポ..."
-            className="w-full px-4 py-3 bg-neutral-800 text-white rounded-lg border border-neutral-700 focus:border-green-500 focus:outline-none"
+            className="w-full px-4 py-3 bg-neutral-800 text-white rounded-lg border border-neutral-700 focus:border-sky-500 focus:outline-none"
           />
         </div>
 
@@ -225,7 +225,7 @@ export function UploadPage() {
         <button
           onClick={handleUpload}
           disabled={!audioFile || !title.trim() || uploading}
-          className="w-full py-3 bg-green-500 text-black font-bold rounded-full hover:bg-green-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-3 bg-sky-500 text-black font-bold rounded-full hover:bg-sky-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {uploading ? 'アップロード中...' : 'アップロード'}
         </button>

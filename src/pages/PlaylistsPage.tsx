@@ -58,7 +58,7 @@ export function PlaylistsPage() {
         </div>
         <button
           onClick={() => setShowCreate(true)}
-          className="px-4 py-2 bg-green-500 text-black font-medium rounded-full hover:bg-green-400 transition-colors"
+          className="px-4 py-2 bg-sky-500 text-black font-medium rounded-full hover:bg-sky-400 transition-colors"
         >
           + 作成
         </button>
@@ -76,7 +76,7 @@ export function PlaylistsPage() {
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               placeholder="プレイリスト名"
-              className="w-full px-4 py-2 bg-neutral-800 text-white rounded-lg border border-neutral-700 focus:border-green-500 focus:outline-none mb-4"
+              className="w-full px-4 py-2 bg-neutral-800 text-white rounded-lg border border-neutral-700 focus:border-sky-500 focus:outline-none mb-4"
               autoFocus
             />
             <div className="flex gap-2">
@@ -89,7 +89,7 @@ export function PlaylistsPage() {
               <button
                 onClick={handleCreate}
                 disabled={!newName.trim()}
-                className="flex-1 px-4 py-2 bg-green-500 text-black font-medium rounded-full hover:bg-green-400 transition-colors disabled:opacity-50"
+                className="flex-1 px-4 py-2 bg-sky-500 text-black font-medium rounded-full hover:bg-sky-400 transition-colors disabled:opacity-50"
               >
                 作成
               </button>

@@ -184,7 +184,7 @@ export function AccountModal({ onClose }: AccountModalProps) {
         {/* Current account info */}
         <div className="px-4 py-3 bg-neutral-800/50 text-sm text-neutral-400">
           現在のアカウント:{' '}
-          <span className="text-green-400 font-medium">
+          <span className="text-sky-400 font-medium">
             {accounts.find((a) => a.accountId === currentAccountId)?.name ||
               '不明'}
           </span>
@@ -194,7 +194,7 @@ export function AccountModal({ onClose }: AccountModalProps) {
         {!showCreate ? (
           <button
             onClick={() => setShowCreate(true)}
-            className="w-full flex items-center gap-3 px-4 py-3 text-green-400 hover:bg-neutral-800 transition-colors"
+            className="w-full flex items-center gap-3 px-4 py-3 text-sky-400 hover:bg-neutral-800 transition-colors"
           >
             <span className="w-12 h-12 bg-neutral-800 rounded-full flex items-center justify-center text-2xl">
               +
@@ -208,7 +208,7 @@ export function AccountModal({ onClose }: AccountModalProps) {
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               placeholder="アカウント名"
-              className="flex-1 px-4 py-2 bg-neutral-800 text-white rounded-lg border border-neutral-700 focus:border-green-500 focus:outline-none"
+              className="flex-1 px-4 py-2 bg-neutral-800 text-white rounded-lg border border-neutral-700 focus:border-sky-500 focus:outline-none"
               autoFocus
               onKeyDown={(e) => {
                 if (e.key === 'Enter') handleCreateAccount();
@@ -221,7 +221,7 @@ export function AccountModal({ onClose }: AccountModalProps) {
             <button
               onClick={handleCreateAccount}
               disabled={!newName.trim()}
-              className="px-4 py-2 bg-green-500 text-black font-medium rounded-lg hover:bg-green-400 transition-colors disabled:opacity-50"
+              className="px-4 py-2 bg-sky-500 text-black font-medium rounded-lg hover:bg-sky-400 transition-colors disabled:opacity-50"
             >
               作成
             </button>
@@ -264,7 +264,7 @@ export function AccountModal({ onClose }: AccountModalProps) {
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
                       placeholder="アカウント名"
-                      className="w-full px-3 py-2 bg-neutral-700 text-white rounded-lg border border-neutral-600 focus:border-green-500 focus:outline-none"
+                      className="w-full px-3 py-2 bg-neutral-700 text-white rounded-lg border border-neutral-600 focus:border-sky-500 focus:outline-none"
                       autoFocus
                     />
                   </div>
@@ -277,7 +277,7 @@ export function AccountModal({ onClose }: AccountModalProps) {
                       value={editArtistName}
                       onChange={(e) => setEditArtistName(e.target.value)}
                       placeholder="アップロード時のデフォルト名"
-                      className="w-full px-3 py-2 bg-neutral-700 text-white rounded-lg border border-neutral-600 focus:border-green-500 focus:outline-none"
+                      className="w-full px-3 py-2 bg-neutral-700 text-white rounded-lg border border-neutral-600 focus:border-sky-500 focus:outline-none"
                     />
                   </div>
                   <div className="flex gap-2 justify-end">
@@ -290,7 +290,7 @@ export function AccountModal({ onClose }: AccountModalProps) {
                     <button
                       onClick={handleSaveSettings}
                       disabled={!editName.trim()}
-                      className="px-4 py-1.5 bg-green-500 text-black font-medium rounded-lg hover:bg-green-400 transition-colors disabled:opacity-50"
+                      className="px-4 py-1.5 bg-sky-500 text-black font-medium rounded-lg hover:bg-sky-400 transition-colors disabled:opacity-50"
                     >
                       保存
                     </button>
@@ -314,7 +314,7 @@ export function AccountModal({ onClose }: AccountModalProps) {
                   <span
                     className={`w-12 h-12 rounded-full flex items-center justify-center ${
                       isCurrentAccount
-                        ? 'bg-green-500/20 text-green-400'
+                        ? 'bg-sky-500/20 text-sky-400'
                         : 'bg-neutral-800 text-neutral-400'
                     }`}
                   >
@@ -323,12 +323,12 @@ export function AccountModal({ onClose }: AccountModalProps) {
                   <div className="flex-1 text-left">
                     <div
                       className={`font-medium ${
-                        isCurrentAccount ? 'text-green-400' : 'text-white'
+                        isCurrentAccount ? 'text-sky-400' : 'text-white'
                       }`}
                     >
                       {account.name}
                       {isCurrentAccount && (
-                        <span className="ml-2 text-xs text-green-400/70">
+                        <span className="ml-2 text-xs text-sky-400/70">
                           (使用中)
                         </span>
                       )}
@@ -364,7 +364,7 @@ export function AccountModal({ onClose }: AccountModalProps) {
                       {/* Edit button */}
                       <button
                         onClick={() => handleStartEdit(account.accountId)}
-                        className="p-2 text-neutral-500 hover:text-green-400 transition-colors"
+                        className="p-2 text-neutral-500 hover:text-sky-400 transition-colors"
                       >
                         <EditIcon className="w-5 h-5" />
                       </button>

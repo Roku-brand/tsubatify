@@ -63,7 +63,7 @@ export function BottomTab() {
             className={({ isActive }) =>
               `flex flex-col items-center justify-center gap-1 px-5 py-2 rounded-xl transition-colors ${
                 isActive
-                  ? 'text-green-400'
+                  ? 'text-sky-400'
                   : 'text-neutral-400 hover:text-neutral-200'
               }`
             }
