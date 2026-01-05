@@ -24,13 +24,7 @@ export function HomePage() {
   };
 
   return (
-    <div className="pb-4">
-      <header className="px-4 py-6">
-        <h1 className="text-2xl font-bold text-white">おかえりなさい</h1>
-        <p className="text-neutral-400 text-sm mt-1">
-          今日も音楽を楽しもう
-        </p>
-      </header>
+    <div className="pb-4 pt-4">
 
       {/* Recently Added */}
       {recentlyAdded.length > 0 && (

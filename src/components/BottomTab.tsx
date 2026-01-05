@@ -46,10 +46,10 @@ function UploadIcon({ className }: { className?: string }) {
 }
 
 const tabs = [
-  { to: '/home', Icon: HomeIcon, label: 'Home' },
-  { to: '/library', Icon: LibraryIcon, label: 'Library' },
-  { to: '/playlists', Icon: PlaylistIcon, label: 'Playlists' },
-  { to: '/upload', Icon: UploadIcon, label: 'Upload' },
+  { to: '/home', Icon: HomeIcon, label: 'ホーム' },
+  { to: '/library', Icon: LibraryIcon, label: '検索' },
+  { to: '/playlists', Icon: PlaylistIcon, label: 'プレイリスト' },
+  { to: '/upload', Icon: UploadIcon, label: 'アップロード' },
 ];
 
 export function BottomTab() {
