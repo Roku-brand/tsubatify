@@ -4,13 +4,15 @@ import { useNavigate } from 'react-router-dom';
 import { addTrack, saveAudioBlob } from '../lib/storage';
 import { uuid } from '../lib/utils';
 import type { Track } from '../lib/types';
+import { useAccountStore } from '../store/accountStore';
 
 export function UploadPage() {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const currentAccount = useAccountStore((state) => state.currentAccount);
 
   const [title, setTitle] = useState('');
-  const [artist, setArtist] = useState('');
+  const [artist, setArtist] = useState(currentAccount?.defaultArtistName || '');
   const [tags, setTags] = useState('');
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [coverFile, setCoverFile] = useState<File | null>(null);
@@ -103,7 +105,7 @@ export function UploadPage() {
 
       // Reset form
       setTitle('');
-      setArtist('');
+      setArtist(currentAccount?.defaultArtistName || '');
       setTags('');
       setAudioFile(null);
       setCoverFile(null);

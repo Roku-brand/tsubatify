@@ -4,6 +4,7 @@ export interface Account {
   accountId: string;
   name: string;
   createdAt: number;
+  defaultArtistName?: string;
 }
 
 export interface Track {
