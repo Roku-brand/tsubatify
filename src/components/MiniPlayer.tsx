@@ -26,7 +26,7 @@ export function MiniPlayer() {
   return (
     <div
       onClick={handleClick}
-      className="fixed bottom-14 left-0 right-0 bg-neutral-900/95 backdrop-blur-md border-t border-neutral-800 cursor-pointer z-30"
+      className="fixed bottom-24 left-4 right-4 bg-neutral-900/95 backdrop-blur-md rounded-xl border border-neutral-800 cursor-pointer z-30 mb-safe"
     >
       {/* Progress bar */}
       <div className="h-1 bg-neutral-800">

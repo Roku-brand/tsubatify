@@ -1,6 +1,7 @@
 // Library Page - All tracks list
 import { useState, useMemo } from 'react';
 import { TrackRow } from '../components/TrackRow';
+import { AddToPlaylistModal } from '../components/AddToPlaylistModal';
 import { getTracks, removeTrack as removeTrackFromStorage, deleteAudioBlob } from '../lib/storage';
 import { usePlayerStore } from '../store/playerStore';
 import type { Track } from '../lib/types';
@@ -9,6 +10,7 @@ export function LibraryPage() {
   const [tracks, setTracks] = useState<Track[]>(() => getTracks());
   const [search, setSearch] = useState('');
   const { currentTrack, playQueue } = usePlayerStore();
+  const [playlistModalTrack, setPlaylistModalTrack] = useState<Track | null>(null);
 
   const filteredTracks = useMemo(() => {
     const query = search.toLowerCase();
@@ -69,6 +71,8 @@ export function LibraryPage() {
               onDelete={() => handleDelete(track.trackId)}
               showDelete
               isPlaying={currentTrack?.trackId === track.trackId}
+              showAddToPlaylist
+              onAddToPlaylist={() => setPlaylistModalTrack(track)}
             />
           ))
         ) : (
@@ -79,6 +83,15 @@ export function LibraryPage() {
           </div>
         )}
       </div>
+
+      {/* Add to Playlist Modal */}
+      {playlistModalTrack && (
+        <AddToPlaylistModal
+          trackId={playlistModalTrack.trackId}
+          trackTitle={playlistModalTrack.title}
+          onClose={() => setPlaylistModalTrack(null)}
+        />
+      )}
     </div>
   );
 }
