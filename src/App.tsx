@@ -13,7 +13,7 @@ import { NotFoundPage } from './pages/NotFoundPage';
 
 function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-neutral-950 text-white pb-28">
+    <div className="min-h-screen bg-neutral-950 text-white pb-44">
       <main className="max-w-2xl mx-auto">{children}</main>
       <MiniPlayer />
       <BottomTab />
