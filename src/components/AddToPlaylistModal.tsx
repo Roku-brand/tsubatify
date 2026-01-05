@@ -65,11 +65,15 @@ export function AddToPlaylistModal({
   return (
     <div
       className="fixed inset-0 bg-black/70 flex items-end justify-center z-50"
-      onClick={onClose}
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+      onTouchEnd={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
     >
       <div
         className="w-full max-w-lg bg-neutral-900 rounded-t-2xl max-h-[70vh] overflow-hidden"
-        onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-neutral-800">
