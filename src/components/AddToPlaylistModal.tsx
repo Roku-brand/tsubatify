@@ -97,7 +97,7 @@ export function AddToPlaylistModal({
         {!showCreate ? (
           <button
             onClick={() => setShowCreate(true)}
-            className="w-full flex items-center gap-3 px-4 py-3 text-green-400 hover:bg-neutral-800 transition-colors"
+            className="w-full flex items-center gap-3 px-4 py-3 text-sky-400 hover:bg-neutral-800 transition-colors"
           >
             <span className="w-12 h-12 bg-neutral-800 rounded-lg flex items-center justify-center text-2xl">
               +
@@ -111,13 +111,13 @@ export function AddToPlaylistModal({
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               placeholder="プレイリスト名"
-              className="flex-1 px-4 py-2 bg-neutral-800 text-white rounded-lg border border-neutral-700 focus:border-green-500 focus:outline-none"
+              className="flex-1 px-4 py-2 bg-neutral-800 text-white rounded-lg border border-neutral-700 focus:border-sky-500 focus:outline-none"
               autoFocus
             />
             <button
               onClick={handleCreateAndAdd}
               disabled={!newName.trim()}
-              className="px-4 py-2 bg-green-500 text-black font-medium rounded-lg hover:bg-green-400 transition-colors disabled:opacity-50"
+              className="px-4 py-2 bg-sky-500 text-black font-medium rounded-lg hover:bg-sky-400 transition-colors disabled:opacity-50"
             >
               作成
             </button>
@@ -160,7 +160,7 @@ export function AddToPlaylistModal({
                     </div>
                   </div>
                   {!isAdded && (
-                    <span className="text-green-400 text-xl">+</span>
+                    <span className="text-sky-400 text-xl">+</span>
                   )}
                 </button>
               );

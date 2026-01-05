@@ -52,7 +52,7 @@ export function TrackRow({
       {index !== undefined && (
         <span className="w-6 text-center text-sm text-neutral-500">
           {isPlaying ? (
-            <span className="text-green-400">▶</span>
+            <span className="text-sky-400">▶</span>
           ) : (
             index + 1
           )}
@@ -78,7 +78,7 @@ export function TrackRow({
       <div className="flex-1 min-w-0">
         <div
           className={`text-sm font-medium truncate ${
-            isPlaying ? 'text-green-400' : 'text-white'
+            isPlaying ? 'text-sky-400' : 'text-white'
           }`}
         >
           {track.title}
@@ -100,7 +100,7 @@ export function TrackRow({
             e.stopPropagation();
             onAddToPlaylist();
           }}
-          className="w-8 h-8 rounded-full text-neutral-400 hover:text-green-400 hover:bg-neutral-800 flex items-center justify-center transition-colors"
+          className="w-8 h-8 rounded-full text-neutral-400 hover:text-sky-400 hover:bg-neutral-800 flex items-center justify-center transition-colors"
           title="プレイリストに追加"
         >
           <AddToPlaylistIcon className="w-5 h-5" />

@@ -55,7 +55,7 @@ export function LibraryPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="曲名、アーティスト、タグで検索..."
-          className="w-full px-4 py-2 bg-neutral-800 text-white rounded-lg border border-neutral-700 focus:border-green-500 focus:outline-none"
+          className="w-full px-4 py-2 bg-neutral-800 text-white rounded-lg border border-neutral-700 focus:border-sky-500 focus:outline-none"
         />
       </div>
 
