@@ -1,13 +1,18 @@
 // Home Page
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CardSection, CardItem, PlaylistCard } from '../components/CardSection';
+import { AccountModal, SettingsButton } from '../components/AccountModal';
 import { getTracks, getPlaylists } from '../lib/storage';
 import { getRecentTracks } from '../store/playerStore';
 import { usePlayerStore } from '../store/playerStore';
+import { useAccountStore } from '../store/accountStore';
 
 export function HomePage() {
   const navigate = useNavigate();
   const playTrack = usePlayerStore((state) => state.playTrack);
+  const currentAccount = useAccountStore((state) => state.currentAccount);
+  const [showAccountModal, setShowAccountModal] = useState(false);
 
   const tracks = getTracks();
   const playlists = getPlaylists();
@@ -25,6 +30,14 @@ export function HomePage() {
 
   return (
     <div className="pb-4 pt-4">
+      {/* Header with settings button */}
+      <div className="flex items-center justify-between px-4 mb-4">
+        <SettingsButton onClick={() => setShowAccountModal(true)} />
+        <span className="text-sm text-neutral-400">
+          {currentAccount?.name || 'デフォルト'}
+        </span>
+        <div className="w-10" /> {/* Spacer for balance */}
+      </div>
 
       {/* Recently Added */}
       {recentlyAdded.length > 0 && (
@@ -88,6 +101,11 @@ export function HomePage() {
             音楽をアップロード
           </button>
         </div>
+      )}
+
+      {/* Account Modal */}
+      {showAccountModal && (
+        <AccountModal onClose={() => setShowAccountModal(false)} />
       )}
     </div>
   );

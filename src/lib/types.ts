@@ -1,5 +1,11 @@
 // Data models for Tsubatify
 
+export interface Account {
+  accountId: string;
+  name: string;
+  createdAt: number;
+}
+
 export interface Track {
   trackId: string;
   title: string;
