@@ -56,6 +56,24 @@ function TrashIcon({ className }: { className?: string }) {
   );
 }
 
+// Edit icon
+function EditIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+      <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+    </svg>
+  );
+}
+
 interface AccountModalProps {
   onClose: () => void;
 }
@@ -67,11 +85,45 @@ export function AccountModal({ onClose }: AccountModalProps) {
     switchAccount,
     createAccount,
     deleteAccount,
+    updateAccount,
   } = useAccountStore();
 
   const [showCreate, setShowCreate] = useState(false);
   const [newName, setNewName] = useState('');
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  
+  // Settings editing state
+  const [editingAccountId, setEditingAccountId] = useState<string | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editArtistName, setEditArtistName] = useState('');
+
+  const handleStartEdit = (accountId: string) => {
+    const account = accounts.find((a) => a.accountId === accountId);
+    if (account) {
+      setEditName(account.name);
+      setEditArtistName(account.defaultArtistName || '');
+      setEditingAccountId(accountId);
+      setShowCreate(false);
+      setConfirmDelete(null);
+    }
+  };
+
+  const handleSaveSettings = () => {
+    if (!editingAccountId || !editName.trim()) return;
+    updateAccount(editingAccountId, {
+      name: editName.trim(),
+      defaultArtistName: editArtistName.trim() || undefined,
+    });
+    setEditingAccountId(null);
+    setEditName('');
+    setEditArtistName('');
+  };
+
+  const handleCancelEdit = () => {
+    setEditingAccountId(null);
+    setEditName('');
+    setEditArtistName('');
+  };
 
   const handleCreateAccount = () => {
     if (!newName.trim()) return;
@@ -187,6 +239,61 @@ export function AccountModal({ onClose }: AccountModalProps) {
             const isCurrentAccount = account.accountId === currentAccountId;
             const isDefaultAccount = account.accountId === 'default';
             const isConfirmingDelete = confirmDelete === account.accountId;
+            const isEditing = editingAccountId === account.accountId;
+
+            // Show edit form if this account is being edited
+            if (isEditing) {
+              return (
+                <div
+                  key={account.accountId}
+                  className="px-4 py-3 bg-neutral-800/50 space-y-3"
+                >
+                  <div className="text-sm text-neutral-400 font-medium">
+                    アカウント設定を編集
+                  </div>
+                  <div>
+                    <label className="block text-xs text-neutral-500 mb-1">
+                      アカウント名
+                    </label>
+                    <input
+                      type="text"
+                      value={editName}
+                      onChange={(e) => setEditName(e.target.value)}
+                      placeholder="アカウント名"
+                      className="w-full px-3 py-2 bg-neutral-700 text-white rounded-lg border border-neutral-600 focus:border-green-500 focus:outline-none"
+                      autoFocus
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-neutral-500 mb-1">
+                      デフォルトアーティスト名
+                    </label>
+                    <input
+                      type="text"
+                      value={editArtistName}
+                      onChange={(e) => setEditArtistName(e.target.value)}
+                      placeholder="アップロード時のデフォルト名"
+                      className="w-full px-3 py-2 bg-neutral-700 text-white rounded-lg border border-neutral-600 focus:border-green-500 focus:outline-none"
+                    />
+                  </div>
+                  <div className="flex gap-2 justify-end">
+                    <button
+                      onClick={handleCancelEdit}
+                      className="px-3 py-1.5 text-neutral-400 hover:text-white transition-colors"
+                    >
+                      キャンセル
+                    </button>
+                    <button
+                      onClick={handleSaveSettings}
+                      disabled={!editName.trim()}
+                      className="px-4 py-1.5 bg-green-500 text-black font-medium rounded-lg hover:bg-green-400 transition-colors disabled:opacity-50"
+                    >
+                      保存
+                    </button>
+                  </div>
+                </div>
+              );
+            }
 
             return (
               <div
@@ -223,40 +330,52 @@ export function AccountModal({ onClose }: AccountModalProps) {
                       )}
                     </div>
                     <div className="text-sm text-neutral-400">
-                      {new Date(account.createdAt).toLocaleDateString('ja-JP')}
+                      {account.defaultArtistName
+                        ? `🎤 ${account.defaultArtistName}`
+                        : new Date(account.createdAt).toLocaleDateString('ja-JP')}
                     </div>
                   </div>
                 </button>
 
-                {/* Delete button (not for default account) */}
-                {!isDefaultAccount && (
-                  <div className="flex items-center">
-                    {isConfirmingDelete ? (
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-red-400">削除？</span>
-                        <button
-                          onClick={() => handleDeleteAccount(account.accountId)}
-                          className="px-2 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-400 transition-colors"
-                        >
-                          はい
-                        </button>
-                        <button
-                          onClick={() => setConfirmDelete(null)}
-                          className="px-2 py-1 bg-neutral-700 text-white text-xs rounded hover:bg-neutral-600 transition-colors"
-                        >
-                          いいえ
-                        </button>
-                      </div>
-                    ) : (
+                {/* Edit and Delete buttons */}
+                <div className="flex items-center">
+                  {isConfirmingDelete ? (
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-red-400">削除？</span>
                       <button
-                        onClick={() => setConfirmDelete(account.accountId)}
-                        className="p-2 text-neutral-500 hover:text-red-400 transition-colors"
+                        onClick={() => handleDeleteAccount(account.accountId)}
+                        className="px-2 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-400 transition-colors"
                       >
-                        <TrashIcon className="w-5 h-5" />
+                        はい
                       </button>
-                    )}
-                  </div>
-                )}
+                      <button
+                        onClick={() => setConfirmDelete(null)}
+                        className="px-2 py-1 bg-neutral-700 text-white text-xs rounded hover:bg-neutral-600 transition-colors"
+                      >
+                        いいえ
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      {/* Edit button */}
+                      <button
+                        onClick={() => handleStartEdit(account.accountId)}
+                        className="p-2 text-neutral-500 hover:text-green-400 transition-colors"
+                      >
+                        <EditIcon className="w-5 h-5" />
+                      </button>
+                      {/* Delete button (not for default account) */}
+                      {!isDefaultAccount && (
+                        <button
+                          onClick={() => setConfirmDelete(account.accountId)}
+                          className="p-2 text-neutral-500 hover:text-red-400 transition-colors"
+                        >
+                          <TrashIcon className="w-5 h-5" />
+                        </button>
+                      )}
+                    </>
+                  )}
+                </div>
               </div>
             );
           })}

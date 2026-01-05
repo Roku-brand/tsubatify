@@ -26,6 +26,7 @@ interface AccountState {
   createAccount: (name: string) => Account;
   deleteAccount: (accountId: string) => void;
   renameAccount: (accountId: string, name: string) => void;
+  updateAccount: (accountId: string, updates: Partial<Account>) => void;
 }
 
 export const useAccountStore = create<AccountState>((set) => ({
@@ -71,6 +72,19 @@ export const useAccountStore = create<AccountState>((set) => ({
 
   renameAccount: (accountId: string, name: string) => {
     updateAccountInStorage(accountId, { name: name.trim() });
+    set({
+      accounts: getAccounts(),
+      currentAccount: getCurrentAccount(),
+    });
+  },
+
+  updateAccount: (accountId: string, updates: Partial<Account>) => {
+    // Only update if account exists
+    const accounts = getAccounts();
+    if (!accounts.some((a) => a.accountId === accountId)) {
+      return;
+    }
+    updateAccountInStorage(accountId, updates);
     set({
       accounts: getAccounts(),
       currentAccount: getCurrentAccount(),
